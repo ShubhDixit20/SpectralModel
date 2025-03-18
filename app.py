@@ -73,5 +73,9 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+@app.route("/")
+def home():
+    return jsonify({"message": "PLS Regression API is running!"})
+
 if __name__ == "__main__":
     app.run(debug=True)
