@@ -46,6 +46,8 @@ def extract_advanced_features(df, wavelengths):
         for w2 in wavelengths[i+1:]:
             df[f'poly_{w1}_{w2}'] = df[w1] * df[w2]
 
+    df.columns = df.columns.astype(str)
+
     return df
 
 @app.route("/predict", methods=["POST"])
