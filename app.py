@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import joblib
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 app = Flask(__name__)
 
@@ -12,8 +13,15 @@ pls_model = joblib.load("pls_regressor.pkl")
 specific_wavelengths = [410, 450, 470, 490, 510, 530, 550, 570, 590, 610, 
                         630, 650, 670, 690, 710, 730, 860, 940]
 
+# Initialize StandardScaler
+scaler = StandardScaler()
+
 def extract_advanced_features(df, wavelengths):
+    """Extracts advanced spectral features from given wavelengths."""
     df.columns = pd.to_numeric(df.columns, errors='ignore')
+
+    # Apply StandardScaler on the original 18 wavelengths
+    df[wavelengths] = scaler.fit_transform(df[wavelengths])
 
     df['mean_reflectance'] = df[wavelengths].mean(axis=1)
     df['std_reflectance'] = df[wavelengths].std(axis=1)
@@ -46,6 +54,7 @@ def extract_advanced_features(df, wavelengths):
         for w2 in wavelengths[i+1:]:
             df[f'poly_{w1}_{w2}'] = df[w1] * df[w2]
 
+    # Convert all column names to string (fix for PLS regression)
     df.columns = df.columns.astype(str)
 
     return df
