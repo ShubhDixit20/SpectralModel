@@ -57,6 +57,10 @@ def extract_advanced_features(df, wavelengths):
     # Convert all column names to string (fix for PLS regression)
     df.columns = df.columns.astype(str)
 
+    # Handle NaN and infinite values
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)  # Convert infinities to NaN
+    df.fillna(0, inplace=True)  # Replace NaNs with 0 (or another default value)
+
     return df
 
 @app.route("/predict", methods=["POST"])
